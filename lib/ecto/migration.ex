@@ -429,7 +429,8 @@ defmodule Ecto.Migration do
 
   ## Options
 
-    * `:name` - the name of the index. Defaults to "#{table}_#{column}_index"
+    * `:name` - the name of the index. Defaults to "#{table}_#{column}_#{extension}"
+    * `:default_extension` - defaults to 'index'
     * `:unique` - if the column(s) is unique or not
     * `:concurrently` - if the index should be created/dropped concurrently
     * `:using` - configures the index type
@@ -492,7 +493,7 @@ defmodule Ecto.Migration do
   """
   def index(table, columns, opts \\ []) when is_atom(table) and is_list(columns) do
     index = struct(%Index{table: table, columns: columns}, opts)
-    %{index | name: index.name || default_index_name(index)}
+    %{index | name: index.name || default_index_name(index, opts)}
   end
 
   @doc """
@@ -504,8 +505,8 @@ defmodule Ecto.Migration do
     index(table, columns, [unique: true] ++ opts)
   end
 
-  defp default_index_name(index) do
-    [index.table, index.columns, "index"]
+  defp default_index_name(index, opts \\ []) do
+    [index.table, index.columns, opts[:default_extension] || "index"]
     |> List.flatten
     |> Enum.join("_")
     |> String.replace(~r"[^\w_]", "_")
