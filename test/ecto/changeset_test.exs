@@ -972,6 +972,11 @@ defmodule Ecto.ChangesetTest do
            [%{type: :unique, field: :title, constraint: "posts_title_index",
               error: {"has already been taken", []}}]
 
+    changeset = change(%Post{}) |> unique_constraint(:title, default_extension: "idx")
+    assert changeset.constraints ==
+           [%{type: :unique, field: :title, constraint: "posts_title_idx",
+              error: {"has already been taken", []}}]
+
     changeset = change(%Post{}) |> unique_constraint(:title, name: :whatever, message: "is taken")
     assert changeset.constraints ==
            [%{type: :unique, field: :title, constraint: "whatever", error: {"is taken", []}}]
